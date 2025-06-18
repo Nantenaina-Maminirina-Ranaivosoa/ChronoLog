@@ -1,21 +1,26 @@
-// 1. Importation du module Express
+// backend/src/server.js (mis à jour)
+
 const express = require('express');
-
-// 2. Création d'une instance de l'application Express
 const app = express();
-
-// 3. Définition du port d'écoute
-// On utilise le port 3001 pour le backend (React utilise souvent le 3000 par défaut)
 const port = 3001;
 
-// 4. Définition d'une route (ou "endpoint")
-// Quand une requête GET est faite à la racine ('/'), on envoie une réponse
+// Importation des routes pour les frises
+const timelineRoutes = require('./routes/timelines');
+
+// Middleware pour parser le JSON des requêtes
+// C'est indispensable pour que req.body fonctionne sur les routes POST
+app.use(express.json());
+
+// Route de test initiale
 app.get('/', (req, res) => {
   res.send('✅ Le serveur ChronoLog fonctionne !');
 });
 
-// 5. Démarrage du serveur
-// L'application écoute les requêtes sur le port défini
+// Utilisation des routes de l'API
+// Toutes les routes définies dans timelines.js seront préfixées par /api/timelines
+app.use('/api/timelines', timelineRoutes);
+
+
 app.listen(port, () => {
   console.log(`🚀 Serveur démarré sur http://localhost:${port}`);
 });

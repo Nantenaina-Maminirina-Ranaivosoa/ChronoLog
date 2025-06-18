@@ -1,0 +1,15 @@
+# Fichier .gitignore (à la racine)
+
+# Dépendances du Backend
+/backend/node_modules
+
+# Fichiers de log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Fichiers d'environnement 
+/backend/.env
+
+# Fichiers de build 
+/backend/dist

@@ -18,6 +18,10 @@
   border-radius: 8px;
   text-align: left;
 }
+.timeline-card-link {
+  text-decoration: none;
+  color: inherit;
+}
 
 .timeline-card h2 {
   margin-top: 0;

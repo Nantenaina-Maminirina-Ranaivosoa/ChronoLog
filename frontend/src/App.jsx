@@ -1,6 +1,7 @@
 // frontend/src/App.jsx (mis à jour)
 
 import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom'; 
 import TimelineForm from './components/TimelineForm'; // <-- Importer le composant
 import './App.css';
 
@@ -40,10 +41,12 @@ function App() {
         <div className="timelines-list">
           {timelines.length > 0 ? (
             timelines.map(timeline => (
-              <div key={timeline.id} className="timeline-card">
+              <Link to={`/timeline/${timeline.id}`} key={timeline.id} className="timeline-card-link">
+              <div className="timeline-card">
                 <h3>{timeline.title}</h3>
                 <p>{timeline.description}</p>
               </div>
+            </Link>
             ))
           ) : (
             !error && <p>Aucune frise trouvée. Créez-en une !</p>

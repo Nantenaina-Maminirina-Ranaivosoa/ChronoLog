@@ -19,6 +19,28 @@ router.get('/', (req, res) => {
   });
 });
 
+// ROUTE GET /api/timelines/:id - Récupérer UNE SEULE frise par son ID
+router.get('/:id', (req, res) => {
+  const { id } = req.params;
+  const sql = "SELECT * FROM timelines WHERE id = ?";
+
+  // db.get est optimisé pour ne récupérer qu'une seule ligne
+  db.get(sql, [id], (err, row) => {
+    if (err) {
+      res.status(500).json({ "error": err.message });
+      return;
+    }
+    if (row) {
+      res.json({
+        "message": "success",
+        "data": row
+      });
+    } else {
+      res.status(404).json({ "error": "Frise non trouvée" });
+    }
+  });
+});
+
 // ROUTE POST /api/timelines - Créer une nouvelle frise
 router.post('/', (req, res) => {
   const { title, description } = req.body;

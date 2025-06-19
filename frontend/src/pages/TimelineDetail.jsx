@@ -1,32 +1,44 @@
-// frontend/src/pages/TimelineDetail.jsx
-
+// frontend/src/pages/TimelineDetail.jsx (entièrement mis à jour)
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
+import EventForm from '../components/EventForm'; // Importer le formulaire
 
 function TimelineDetail() {
   const [timeline, setTimeline] = useState(null);
+  const [events, setEvents] = useState([]); // État pour les événements
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const { id } = useParams(); // Hook pour récupérer les paramètres de l'URL, ici l':id
+  const { id } = useParams();
 
   useEffect(() => {
-    const fetchTimeline = async () => {
+    const fetchData = async () => {
       try {
-        const response = await fetch(`http://localhost:3001/api/timelines/${id}`);
-        if (!response.ok) {
-          throw new Error(`Cette frise n'existe pas.`);
-        }
-        const data = await response.json();
-        setTimeline(data.data);
+        // Utiliser Promise.all pour lancer les requêtes en parallèle
+        const [timelineRes, eventsRes] = await Promise.all([
+          fetch(`http://localhost:3001/api/timelines/${id}`),
+          fetch(`http://localhost:3001/api/timelines/${id}/events`)
+        ]);
+
+        if (!timelineRes.ok) throw new Error(`Cette frise n'existe pas.`);
+
+        const timelineData = await timelineRes.json();
+        const eventsData = await eventsRes.json();
+
+        setTimeline(timelineData.data);
+        setEvents(eventsData.data);
       } catch (err) {
         setError(err.message);
       } finally {
         setLoading(false);
       }
     };
+    fetchData();
+  }, [id]);
 
-    fetchTimeline();
-  }, [id]); // L'effet se relance si l'ID dans l'URL change
+  const handleEventCreated = (newEvent) => {
+    // Ajoute le nouvel événement à la liste, triée par date
+    setEvents(prevEvents => [...prevEvents, newEvent].sort((a, b) => new Date(a.event_date) - new Date(b.event_date)));
+  };
 
   if (loading) return <p>Chargement de la frise...</p>;
   if (error) return <p className="error">{error}</p>;
@@ -38,10 +50,25 @@ function TimelineDetail() {
         <h1>{timeline.title}</h1>
         <p>{timeline.description}</p>
       </header>
-      <div className="events-section">
-        <h2>Événements</h2>
-        {/* Nous ajouterons les événements ici dans une prochaine étape */}
-        <p>Bientôt, vous pourrez ajouter des événements ici.</p>
+
+      <div className="events-container">
+        <div className="events-list">
+          <h2>Événements</h2>
+          {events.length > 0 ? (
+            events.map(event => (
+              <div key={event.id} className="event-card">
+                <strong>{event.event_date}</strong>: {event.title}
+                <p>{event.description}</p>
+              </div>
+            ))
+          ) : (
+            <p>Aucun événement pour le moment. Ajoutez-en un !</p>
+          )}
+        </div>
+
+        <div className="event-form-container">
+          <EventForm timelineId={id} onEventCreated={handleEventCreated} />
+        </div>
       </div>
     </div>
   );

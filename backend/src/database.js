@@ -29,7 +29,24 @@ db.serialize(() => {
       console.log("Table 'timelines' prête.");
     }
   });
+  // AJOUT : Création de la table 'events'
+  db.run(`CREATE TABLE IF NOT EXISTS events (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    timeline_id INTEGER NOT NULL,
+    event_date TEXT NOT NULL,
+    title TEXT NOT NULL,
+    description TEXT,
+    createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (timeline_id) REFERENCES timelines(id) ON DELETE CASCADE
+  )`, (err) => {
+    if (err) {
+      console.error("Erreur lors de la création de la table 'events':", err.message);
+    } else {
+      console.log("Table 'events' prête.");
+    }
+  });
 });
+
 
 // 3. Exportation de l'instance de la base de données pour l'utiliser dans d'autres fichiers
 module.exports = db;

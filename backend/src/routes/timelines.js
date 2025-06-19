@@ -3,6 +3,8 @@
 const express = require('express');
 const router = express.Router();
 const db = require('../database.js'); // Importation de la connexion à la DB
+const eventsRouter = require('./events.js');
+
 
 // ROUTE GET /api/timelines - Récupérer toutes les frises
 router.get('/', (req, res) => {
@@ -64,5 +66,7 @@ router.post('/', (req, res) => {
     });
   });
 });
+
+router.use('/:timeline_id/events', eventsRouter); // Imbriquer les routes des événements
 
 module.exports = router;

@@ -1,8 +1,7 @@
-// frontend/src/pages/TimelineDetail.jsx (CORRIGÉ)
-
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import EventForm from '../components/EventForm';
+import EventItem from '../components/EventItem';
 
 function TimelineDetail() {
   const [timeline, setTimeline] = useState(null);
@@ -39,21 +38,21 @@ function TimelineDetail() {
   const handleDeleteEvent = async (eventId) => {
     if (window.confirm("Êtes-vous sûr de vouloir supprimer cet événement ?")) {
       try {
-        // --- LIGNE CORRIGÉE ---
-        // On s'assure que les backticks (`) sont bien utilisés et que les variables sont correctement injectées.
-        const response = await fetch(`http://localhost:3001/api/timelines/${id}/events/${eventId}`, {
-          method: 'DELETE',
-        });
-
-        if (!response.ok) {
-          throw new Error("La suppression a échoué.");
-        }
-
+        const response = await fetch(`http://localhost:3001/api/timelines/${id}/events/${eventId}`, { method: 'DELETE' });
+        if (!response.ok) throw new Error("La suppression a échoué.");
         setEvents(prevEvents => prevEvents.filter(event => event.id !== eventId));
       } catch (err) {
         console.error("Erreur lors de la suppression:", err);
       }
     }
+  };
+
+  const handleEventUpdated = (updatedEvent) => {
+    setEvents(prevEvents =>
+      prevEvents.map(event =>
+        event.id === updatedEvent.id ? updatedEvent : event
+      )
+    );
   };
 
   if (loading) return <p>Chargement...</p>;
@@ -66,21 +65,18 @@ function TimelineDetail() {
         <h1>{timeline.title}</h1>
         <p>{timeline.description}</p>
       </header>
-
       <div className="events-container">
         <div className="events-list">
           <h2>Événements</h2>
           {events.length > 0 ? (
             events.map(event => (
-              <div key={event.id} className="event-card">
-                <div className="event-content">
-                  <strong>{event.event_date}</strong>: {event.title}
-                  <p>{event.description}</p>
-                </div>
-                <button onClick={() => handleDeleteEvent(event.id)} className="delete-btn">
-                  &times;
-                </button>
-              </div>
+              <EventItem
+                key={event.id}
+                event={event}
+                timelineId={id}
+                onEventUpdated={handleEventUpdated}
+                onEventDeleted={handleDeleteEvent}
+              />
             ))
           ) : (
             <p>Aucun événement pour le moment. Ajoutez-en un !</p>
@@ -95,3 +91,4 @@ function TimelineDetail() {
 }
 
 export default TimelineDetail;
+

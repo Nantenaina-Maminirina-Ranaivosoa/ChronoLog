@@ -54,4 +54,33 @@ router.delete('/:eventId', (req, res) => {
   });
 });
 
+// PUT /api/timelines/:timeline_id/events/:eventId - Mettre à jour un événement
+router.put('/:eventId', (req, res) => {
+  const { eventId } = req.params;
+  const { event_date, title, description } = req.body;
+
+  if (!event_date || !title) {
+    return res.status(400).json({ error: "La date et le titre sont obligatoires." });
+  }
+
+  const sql = `
+    UPDATE events 
+    SET event_date = ?, title = ?, description = ? 
+    WHERE id = ?
+  `;
+
+  db.run(sql, [event_date, title, description, eventId], function(err) {
+    if (err) {
+      return res.status(500).json({ error: err.message });
+    }
+    if (this.changes === 0) {
+      return res.status(404).json({ error: "Événement non trouvé." });
+    }
+    res.status(200).json({ 
+      message: "Événement mis à jour avec succès.",
+      data: { id: eventId, event_date, title, description } 
+    });
+  });
+});
+
 module.exports = router;

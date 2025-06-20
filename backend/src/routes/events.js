@@ -34,4 +34,24 @@ router.post('/', (req, res) => {
   });
 });
 
+// DELETE /api/timelines/:timeline_id/events/:eventId - Supprimer un événement
+router.delete('/:eventId', (req, res) => {
+  // Notez que nous récupérons l'id de la frise et de l'événement depuis les params
+  const { eventId } = req.params; 
+  const sql = 'DELETE FROM events WHERE id = ?';
+
+  db.run(sql, [eventId], function(err) {
+    if (err) {
+      return res.status(500).json({ error: err.message });
+    }
+    // this.changes contient le nombre de lignes affectées.
+    // Si c'est 0, l'événement n'a pas été trouvé.
+    if (this.changes === 0) {
+      return res.status(404).json({ error: "Événement non trouvé." });
+    }
+    // Le statut 200 (OK) ou 204 (No Content) sont appropriés pour un DELETE réussi.
+    res.status(200).json({ message: "Événement supprimé avec succès." });
+  });
+});
+
 module.exports = router;

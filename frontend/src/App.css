@@ -78,3 +78,31 @@
   background-color: #eee;
   margin: 2rem 0;
 }
+
+.event-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.event-content {
+  flex-grow: 1;
+}
+
+.delete-btn {
+  background: #ff4d4d;
+  color: rgb(255, 255, 255);
+  border: none;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  cursor: pointer;
+  font-weight: bold;
+  line-height: 24px;
+  padding: 0;
+  margin-left: 1rem;
+}
+
+.delete-btn:hover {
+  background: #a67979;
+}
